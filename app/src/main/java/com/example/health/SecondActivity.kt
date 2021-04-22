@@ -1,5 +1,6 @@
 package com.example.health
 
+import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.view.View
@@ -11,6 +12,7 @@ class SecondActivity: AppCompatActivity() {
     private var restTimer: CountDownTimer?= null
     private var restProgress = 0
     private var count = 0
+    private lateinit var mediaPlayer: MediaPlayer
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,6 +38,9 @@ class SecondActivity: AppCompatActivity() {
 
     private fun setRestProgressBar(){
         progressBar.progress = restProgress
+        mediaPlayer = MediaPlayer.create(applicationContext, R.raw.press_start)
+        mediaPlayer!!.isLooping = false // Sets the player to be looping or non-looping.
+        mediaPlayer!!.start() // Starts Playback.
         restTimer = object : CountDownTimer(10000,1000){
             override fun onTick(millisUntilFinished: Long) {
                 restProgress ++
