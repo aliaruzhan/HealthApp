@@ -1,18 +1,36 @@
 package com.example.health
 
 import android.media.MediaPlayer
+import android.os.Build
 import android.os.Bundle
 import android.os.CountDownTimer
+import android.speech.tts.TextToSpeech
+import android.util.Log
 import android.view.View
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_second.*
+import java.util.*
 
-class SecondActivity: AppCompatActivity() {
+class ExercisesActivity: AppCompatActivity(), TextToSpeech.OnInitListener {
     private var restTimer: CountDownTimer?= null
     private var restProgress = 0
     private var count = 0
     private lateinit var mediaPlayer: MediaPlayer
+    private var tts: TextToSpeech? = null
+
+    override fun onInit(status: Int) {
+        if(status == TextToSpeech.SUCCESS){
+            val result = tts!!.setLanguage(Locale.US)
+
+            if(result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED){
+                Log.e("TTS", "The language specified is not supported")
+            }
+        } else{
+            Log.e("TTS","Initialization Failed")
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -25,13 +43,20 @@ class SecondActivity: AppCompatActivity() {
         toolbar_exercise_activity.setNavigationOnClickListener{
             onBackPressed()
         }
+        tts = TextToSpeech(this, this)
+        
         setupRestView()
     }
 
     override fun onDestroy() {
-        if(restTimer != null) {
+        if(restTimer != null ) {
             restTimer!!.cancel()
             restProgress = 0
+        }
+
+        if(tts != null) {
+            tts!!.stop()
+            tts!!.shutdown()
         }
         super.onDestroy()
     }
@@ -48,8 +73,9 @@ class SecondActivity: AppCompatActivity() {
                 tvTimer.text = (10 - restProgress).toString()
             }
 
+            @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
             override fun onFinish() {
-                Toast.makeText(this@SecondActivity, "Start Exercising!",Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@ExercisesActivity, "Start Exercising!",Toast.LENGTH_SHORT).show()
                 when(count){
                     0 -> setupActionView()
                     1 -> setupAction1View()
@@ -79,6 +105,7 @@ class SecondActivity: AppCompatActivity() {
         setRestProgressBar()
     }
 
+    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     private fun setupActionView(){
         if(restTimer != null){
             restTimer!!.cancel()
@@ -89,9 +116,11 @@ class SecondActivity: AppCompatActivity() {
         setAbdominalCrunchProgressBar()
     }
 
+    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     private fun setAbdominalCrunchProgressBar(){
         count++
-        getready.text=" Exercise 1 "
+        getready.text="Abdominal Crunch"
+        speakout("Abdominal Crunch")
         exercise_image.setImageResource(R.drawable.ic_abdominal_crunch)
         exercise_image.visibility = View.VISIBLE
         progressBar.progress = restProgress
@@ -103,12 +132,13 @@ class SecondActivity: AppCompatActivity() {
             }
 
             override fun onFinish() {
-                Toast.makeText(this@SecondActivity, "Rest for 10 seconds!",Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@ExercisesActivity, "Rest for 10 seconds!",Toast.LENGTH_SHORT).show()
                 setupRestView()
             }
         }.start()
     }
 
+    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     private fun setupAction1View(){
         if(restTimer != null){
             restTimer!!.cancel()
@@ -119,9 +149,11 @@ class SecondActivity: AppCompatActivity() {
         setHighKneesProgressBar()
     }
 
+    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     private fun setHighKneesProgressBar(){
         count++
-        getready.text=" Exercise 2"
+        getready.text="High Knees Running In Place"
+        speakout("High knees running in place")
         exercise_image.setImageResource(R.drawable.ic_high_knees_running_in_place)
         exercise_image.visibility = View.VISIBLE
         progressBar.progress = restProgress
@@ -133,12 +165,13 @@ class SecondActivity: AppCompatActivity() {
             }
 
             override fun onFinish() {
-                Toast.makeText(this@SecondActivity, "Rest for 10 seconds!",Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@ExercisesActivity, "Rest for 10 seconds!",Toast.LENGTH_SHORT).show()
                 setupRestView()
             }
         }.start()
     }
 
+    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     private fun setupAction2View(){
         if(restTimer != null){
             restTimer!!.cancel()
@@ -149,9 +182,11 @@ class SecondActivity: AppCompatActivity() {
         setJumpingJacksProgressBar()
     }
 
+    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     private fun setJumpingJacksProgressBar(){
         count++
-        getready.text=" Exercise 3"
+        getready.text="Jumping Jacks"
+        speakout("Jumping jacks")
         exercise_image.setImageResource(R.drawable.ic_jumping_jacks)
         exercise_image.visibility = View.VISIBLE
         progressBar.progress = restProgress
@@ -163,12 +198,13 @@ class SecondActivity: AppCompatActivity() {
             }
 
             override fun onFinish() {
-                Toast.makeText(this@SecondActivity, "Rest for 10 seconds!",Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@ExercisesActivity, "Rest for 10 seconds!",Toast.LENGTH_SHORT).show()
                 setupRestView()
             }
         }.start()
     }
 
+    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     private fun setupAction3View(){
         if(restTimer != null){
             restTimer!!.cancel()
@@ -179,9 +215,11 @@ class SecondActivity: AppCompatActivity() {
         setLungeProgressBar()
     }
 
+    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     private fun setLungeProgressBar(){
         count++
-        getready.text=" Exercise 4 "
+        getready.text="Lunge"
+        speakout("Lunge")
         exercise_image.setImageResource(R.drawable.ic_lunge)
         exercise_image.visibility = View.VISIBLE
         progressBar.progress = restProgress
@@ -193,12 +231,13 @@ class SecondActivity: AppCompatActivity() {
             }
 
             override fun onFinish() {
-                Toast.makeText(this@SecondActivity, "Rest for 10 seconds!",Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@ExercisesActivity, "Rest for 10 seconds!",Toast.LENGTH_SHORT).show()
                 setupRestView()
             }
         }.start()
     }
 
+    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     private fun setupAction4View(){
         if(restTimer != null){
             restTimer!!.cancel()
@@ -209,9 +248,11 @@ class SecondActivity: AppCompatActivity() {
         setPlankProgressBar()
     }
 
+    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     private fun setPlankProgressBar(){
         count++
-        getready.text=" Exercise 5 "
+        getready.text=" Plank Progress"
+        speakout("Plank Progress")
         exercise_image.setImageResource(R.drawable.ic_plank)
         exercise_image.visibility = View.VISIBLE
         progressBar.progress = restProgress
@@ -223,12 +264,13 @@ class SecondActivity: AppCompatActivity() {
             }
 
             override fun onFinish() {
-                Toast.makeText(this@SecondActivity, "Rest for 10 seconds!",Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@ExercisesActivity, "Rest for 10 seconds!",Toast.LENGTH_SHORT).show()
                 setupRestView()
             }
         }.start()
     }
 
+    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     private fun setupAction5View(){
         if(restTimer != null){
             restTimer!!.cancel()
@@ -239,9 +281,11 @@ class SecondActivity: AppCompatActivity() {
         setPushUpProgressBar()
     }
 
+    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     private fun setPushUpProgressBar(){
         count++
-        getready.text=" Exercise 6"
+        getready.text="Push Up"
+        speakout("Push Up")
         exercise_image.setImageResource(R.drawable.ic_push_up)
         exercise_image.visibility = View.VISIBLE
         progressBar.progress = restProgress
@@ -253,12 +297,13 @@ class SecondActivity: AppCompatActivity() {
             }
 
             override fun onFinish() {
-                Toast.makeText(this@SecondActivity, "Rest for 10 seconds!",Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@ExercisesActivity, "Rest for 10 seconds!",Toast.LENGTH_SHORT).show()
                 setupRestView()
             }
         }.start()
     }
 
+    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     private fun setupAction6View(){
         if(restTimer != null){
             restTimer!!.cancel()
@@ -269,9 +314,11 @@ class SecondActivity: AppCompatActivity() {
         setPushAndRotateProgressBar()
     }
 
+    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     private fun setPushAndRotateProgressBar(){
         count++
-        getready.text=" Exercise 7"
+        getready.text="Push Up and Rotation"
+        speakout("Push Up and Rotation")
         exercise_image.setImageResource(R.drawable.ic_push_up_and_rotation)
         exercise_image.visibility = View.VISIBLE
         progressBar.progress = restProgress
@@ -283,12 +330,13 @@ class SecondActivity: AppCompatActivity() {
             }
 
             override fun onFinish() {
-                Toast.makeText(this@SecondActivity, "Rest for 10 seconds!",Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@ExercisesActivity, "Rest for 10 seconds!",Toast.LENGTH_SHORT).show()
                 setupRestView()
             }
         }.start()
     }
 
+    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     private fun setupAction7View(){
         if(restTimer != null){
             restTimer!!.cancel()
@@ -299,9 +347,11 @@ class SecondActivity: AppCompatActivity() {
         setSidePlankProgressBar()
     }
 
+    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     private fun setSidePlankProgressBar(){
         count++
-        getready.text=" Exercise 8"
+        getready.text="Side Plank"
+        speakout("Side Plank")
         exercise_image.setImageResource(R.drawable.ic_side_plank)
         exercise_image.visibility = View.VISIBLE
         progressBar.progress = restProgress
@@ -313,12 +363,13 @@ class SecondActivity: AppCompatActivity() {
             }
 
             override fun onFinish() {
-                Toast.makeText(this@SecondActivity, "Rest for 10 seconds!",Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@ExercisesActivity, "Rest for 10 seconds!",Toast.LENGTH_SHORT).show()
                 setupRestView()
             }
         }.start()
     }
 
+    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     private fun setupAction8View(){
         if(restTimer != null){
             restTimer!!.cancel()
@@ -329,9 +380,11 @@ class SecondActivity: AppCompatActivity() {
         setSquatProgressBar()
     }
 
+    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     private fun setSquatProgressBar(){
         count++
-        getready.text=" Exercise 9"
+        getready.text="Squat"
+        speakout("Squat")
         exercise_image.setImageResource(R.drawable.ic_squat)
         exercise_image.visibility = View.VISIBLE
         progressBar.progress = restProgress
@@ -343,12 +396,13 @@ class SecondActivity: AppCompatActivity() {
             }
 
             override fun onFinish() {
-                Toast.makeText(this@SecondActivity, "Rest for 10 seconds!",Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@ExercisesActivity, "Rest for 10 seconds!",Toast.LENGTH_SHORT).show()
                 setupRestView()
             }
         }.start()
     }
 
+    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     private fun setupAction9View(){
         if(restTimer != null){
             restTimer!!.cancel()
@@ -359,9 +413,11 @@ class SecondActivity: AppCompatActivity() {
         setStepUpProgressBar()
     }
 
+    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     private fun setStepUpProgressBar(){
         count++
-        getready.text=" Exercise 10"
+        getready.text="Step up onto chair"
+        speakout("step up onto chair")
         exercise_image.setImageResource(R.drawable.ic_step_up_onto_chair)
         exercise_image.visibility = View.VISIBLE
         progressBar.progress = restProgress
@@ -373,12 +429,13 @@ class SecondActivity: AppCompatActivity() {
             }
 
             override fun onFinish() {
-                Toast.makeText(this@SecondActivity, "Rest for 10 seconds!",Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@ExercisesActivity, "Rest for 10 seconds!",Toast.LENGTH_SHORT).show()
                 setupRestView()
             }
         }.start()
     }
 
+    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     private fun setupAction10View(){
         if(restTimer != null){
             restTimer!!.cancel()
@@ -389,9 +446,11 @@ class SecondActivity: AppCompatActivity() {
         setTricepsDipProgressBar()
     }
 
+    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     private fun setTricepsDipProgressBar(){
         count++
-        getready.text=" Exercise 11"
+        getready.text="Triceps dip on chair"
+        speakout("Triceps dip on chair")
         exercise_image.setImageResource(R.drawable.ic_triceps_dip_on_chair)
         exercise_image.visibility = View.VISIBLE
         progressBar.progress = restProgress
@@ -403,12 +462,13 @@ class SecondActivity: AppCompatActivity() {
             }
 
             override fun onFinish() {
-                Toast.makeText(this@SecondActivity, "Rest for 10 seconds!",Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@ExercisesActivity, "Rest for 10 seconds!",Toast.LENGTH_SHORT).show()
                 setupRestView()
             }
         }.start()
     }
 
+    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     private fun setupAction11View(){
         if(restTimer != null){
             restTimer!!.cancel()
@@ -419,8 +479,10 @@ class SecondActivity: AppCompatActivity() {
         setWallSitProgressBar()
     }
 
+    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     private fun setWallSitProgressBar(){
-        getready.text="Last Exercise"
+        getready.text="Wall Sit Progress Bar"
+        speakout("Last Exercise. Well done")
         exercise_image.setImageResource(R.drawable.ic_wall_sit)
         exercise_image.visibility = View.VISIBLE
         progressBar.progress = restProgress
@@ -432,9 +494,16 @@ class SecondActivity: AppCompatActivity() {
             }
 
             override fun onFinish() {
-                Toast.makeText(this@SecondActivity, "Finish Exercising!",Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@ExercisesActivity, "Finish Exercising!",Toast.LENGTH_SHORT).show()
             }
         }.start()
     }
+
+   @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
+   private fun speakout(text: String){
+       tts!!.speak(text, TextToSpeech.QUEUE_FLUSH,null, "")
+   }
+
+
 
 }
